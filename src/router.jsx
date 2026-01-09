@@ -10,6 +10,12 @@ import {DefaultLayout} from "./layout/DefaultLayout.jsx";
 import {UserHome} from "./pages/UserHome.jsx";
 import {ResearcherHome} from "./pages/ResearcherHome.jsx";
 import {AdminHome} from "./pages/AdminHome.jsx";
+import Papers from "./pages/Papers.jsx";
+import {SavedPapers} from "./pages/SavedPapers.jsx";
+import {Projects} from "./pages/Projects.jsx";
+import {Equipment} from "./pages/Equipment.jsx";
+import {Experiments} from "./pages/Experiments.jsx";
+import {Users} from "./pages/Users.jsx";
 
 const router = createBrowserRouter([
     {
@@ -33,32 +39,33 @@ const router = createBrowserRouter([
                         path: 'user',
                         children: [
                             { index: true, element: <UserHome /> },
-                            { path: 'papers', element: <Typography variant="h4" fontWeight={700}>Naučni radovi - User</Typography> },
-                            { path: 'saved-papers', element: <Typography variant="h4" fontWeight={700}>Sačuvani radovi</Typography> },
-                            { path: 'projects', element: <Typography variant="h4" fontWeight={700}>Projekti - User</Typography> },
-                            { path: 'equipment', element: <Typography variant="h4" fontWeight={700}>Oprema - User</Typography> },
+                            { path: 'papers', element: <Papers /> },
+                            { path: 'saved-papers', element: <SavedPapers /> },
+                            { path: 'projects', element: <Projects /> },
+                            { path: 'equipment', element: <Equipment /> },
                         ],
                     },
                     {
                         path: 'researcher',
                         children: [
                             { index: true, element: <ResearcherHome /> },
-                            { path: 'papers', element: <Typography variant="h4" fontWeight={700}>Naučni radovi - Researcher</Typography> },
-                            { path: 'saved-papers', element: <Typography variant="h4" fontWeight={700}>Sačuvani radovi</Typography> },
-                            { path: 'projects', element: <Typography variant="h4" fontWeight={700}>Projekti - Researcher</Typography> },
-                            { path: 'experiments', element: <Typography variant="h4" fontWeight={700}>Eksperimenti</Typography> },
-                            { path: 'equipment', element: <Typography variant="h4" fontWeight={700}>Oprema - Researcher</Typography> },
+                            { path: 'papers', element: <Papers /> },
+                            { path: 'saved-papers', element: <SavedPapers /> },
+                            { path: 'projects', element: <Projects /> },
+                            { path: 'experiments', element: <Experiments /> },
+                            { path: 'equipment', element: <Equipment /> },
                         ],
                     },
                     {
                         path: 'admin',
                         children: [
                             { index: true, element: <AdminHome /> },
-                            { path: 'papers', element: <Typography variant="h4" fontWeight={700}>Naučni radovi - Admin</Typography> },
-                            { path: 'projects', element: <Typography variant="h4" fontWeight={700}>Projekti - Admin</Typography> },
-                            { path: 'experiments', element: <Typography variant="h4" fontWeight={700}>Eksperimenti - Admin</Typography> },
-                            { path: 'equipment', element: <Typography variant="h4" fontWeight={700}>Oprema - Admin</Typography> },
-                            { path: 'users', element: <Typography variant="h4" fontWeight={700}>Upravljanje korisnicima</Typography> },
+                            { path: 'papers', element: <Papers /> },
+                            { path: 'projects', element: <Projects /> },
+                            { path: 'experiments', element: <Experiments /> },
+                            { path: 'equipment', element: <Equipment /> },
+                            { path: 'users', element: <Users /> },
+
                         ],
                     },
                 ],
