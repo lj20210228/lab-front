@@ -210,9 +210,6 @@ export function DefaultLayout() {
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <MenuItem onClick={handleMenuClose}>Profil</MenuItem>
-                        <MenuItem onClick={handleMenuClose}>Podešavanja</MenuItem>
-                        <Divider />
                         <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
                             <ListItemIcon sx={{ color: 'error.main' }}>
                                 <LogoutIcon fontSize="small" />
