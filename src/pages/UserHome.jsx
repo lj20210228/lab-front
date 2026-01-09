@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Card,
     CardContent,
@@ -13,142 +13,61 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import FolderIcon from "@mui/icons-material/Folder";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import {useStateContext} from "../context/ContextProvider.jsx";
+import {Bookmark, Description} from "@mui/icons-material";
+import axiosClient from "../axiosClient.js";
 
 export  function UserHome() {
     const { user } = useStateContext();
+    const [favorites, setFavorites] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        axiosClient.get(`/favorites`).then(({data}) => {
+            console.log(data);
+            setFavorites(data.favorites);
+        }).finally(()=>setLoading(false));
+    })
 
-    const stats = [
-        {
-            label: "Sačuvani radovi",
-            value: "24",
-            Icon: BookmarkIcon,
-            color: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-            change: "+4",
-        },
-        {
-            label: "Pregledani radovi",
-            value: "67",
-            Icon: DescriptionIcon,
-            color: "linear-gradient(135deg, #9333ea 0%, #7c3aed 100%)",
-            change: "+12",
-        },
-        {
-            label: "Praćeni projekti",
-            value: "8",
-            Icon: FolderIcon,
-            color: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-            change: "+1",
-        },
-    ];
 
     return (
+
         <Box>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h3" fontWeight={700} gutterBottom>
-                    Dobrodošli, {user?.firstName}!
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                    Pregled vaše aktivnosti u ResearchHub sistemu
-                </Typography>
-            </Box>
+            <Typography variant="h4" gutterBottom>
+                Dashboard
+            </Typography>
+            <Typography variant="body1" color="text.secondary" paragraph>
+                Dobrodošli na Naučni Portal. Ovde možete pregledati naučne radove, projekte i opremu.
+            </Typography>
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
-                {stats.map((stat, index) => {
-                    const Icon = stat.Icon;
 
-                    return (
-                        <Grid item xs={12} md={6} lg={4} key={index}>
-                            <Card
-                                sx={{
-                                    height: "100%",
-                                    transition: "box-shadow 0.3s",
-                                    "&:hover": { boxShadow: 4 },
-                                }}
-                            >
-                                <CardContent sx={{ p: 3 }}>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
-                                        <Box>
-                                            <Typography
-                                                variant="body2"
-                                                color="text.secondary"
-                                                gutterBottom
-                                            >
-                                                {stat.label}
-                                            </Typography>
-
-                                            <Typography variant="h3" fontWeight={700} gutterBottom>
-                                                {stat.value}
-                                            </Typography>
-
-                                            <Box
-                                                sx={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: 0.5,
-                                                }}
-                                            >
-                                                <TrendingUpIcon
-                                                    fontSize="small"
-                                                    color="success"
-                                                />
-                                                <Typography
-                                                    variant="body2"
-                                                    color="success.main"
-                                                    fontWeight={500}
-                                                >
-                                                    {stat.change}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-
-                                        <Box
-                                            sx={{
-                                                width: 48,
-                                                height: 48,
-                                                borderRadius: 2,
-                                                background: stat.color,
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            <Icon sx={{ color: "white" }} />
-                                        </Box>
-                                    </Box>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    );
-                })}
+                <Grid item xs={12} sm={4}>
+                    <Card sx={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', color: 'white' }}>
+                        <CardContent>
+                            <Box display="flex" alignItems="center" justifyContent="space-between">
+                                <Box>
+                                    <Typography variant="h4">{favorites.length}</Typography>
+                                    <Typography variant="body2">Sačuvani radovi</Typography>
+                                </Box>
+                                <Bookmark sx={{ fontSize: 48, opacity: 0.8 }} />
+                            </Box>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Grid>
 
-            <Paper
-                sx={{
-                    p: 3,
-                    border: 1,
-                    borderColor: "primary.light",
-                    background:
-                        "linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%)",
-                }}
-            >
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                    Dobrodošli u ResearchHub
-                </Typography>
 
-                <Typography variant="body2" color="text.secondary">
-                    ResearchHub sistem za upravljanje istraživanjima omogućava
-                    pregled naučnih radova, projekata i laboratorijske opreme.
-                    Vaša trenutna uloga:{" "}
-                    <strong style={{ textTransform: "capitalize" }}>
-                        {user?.role}
-                    </strong>
+            <Paper sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                    Nedavni naučni radovi
                 </Typography>
+                {favorites.slice(0, 3).map((favorite) => (
+                    <Box key={favorite.id} sx={{ mb: 2, pb: 2, borderBottom: '1px solid #eee' }}>
+                        <Typography variant="subtitle1">{favorite.project.title}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {favorite.project.leader.name} • {favorite.project.category}
+                        </Typography>
+                    </Box>
+                ))}
             </Paper>
         </Box>
     );

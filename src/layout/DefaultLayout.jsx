@@ -63,9 +63,9 @@ export function DefaultLayout() {
         { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}` },
         { id: 'papers', label: 'Naučni radovi', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}/papers` },
         { id: 'saved-papers', label: 'Sačuvani radovi', roles: ['researcher', 'user'], path: `/autenticate/${user?.role}/saved-papers` },
-        { id: 'projects', label: 'Projekti', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}/projects` },
+        { id: 'projects', label: 'Projekti', roles: ['admin', 'researcher', ], path: `/autenticate/${user?.role}/projects` },
         { id: 'experiments', label: 'Eksperimenti', roles: ['admin', 'researcher'], path: `/autenticate/${user?.role}/experiments` },
-        { id: 'equipment', label: 'Oprema', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}/equipment` },
+        { id: 'equipment', label: 'Oprema', roles: ['admin', 'researcher',], path: `/autenticate/${user?.role}/equipment` },
         { id: 'users', label: 'Korisnici', roles: ['admin'], path: `/autenticate/${user?.role}/users` },
     ];
 

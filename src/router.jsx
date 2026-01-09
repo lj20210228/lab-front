@@ -10,7 +10,7 @@ import {DefaultLayout} from "./layout/DefaultLayout.jsx";
 import {UserHome} from "./pages/UserHome.jsx";
 import {ResearcherHome} from "./pages/ResearcherHome.jsx";
 import {AdminHome} from "./pages/AdminHome.jsx";
-import Papers from "./pages/Papers.jsx";
+import {Papers} from "./pages/Papers.jsx";
 import {SavedPapers} from "./pages/SavedPapers.jsx";
 import {Projects} from "./pages/Projects.jsx";
 import {Equipment} from "./pages/Equipment.jsx";
@@ -40,9 +40,7 @@ const router = createBrowserRouter([
                         children: [
                             { index: true, element: <UserHome /> },
                             { path: 'papers', element: <Papers /> },
-                            { path: 'saved-papers', element: <SavedPapers /> },
-                            { path: 'projects', element: <Projects /> },
-                            { path: 'equipment', element: <Equipment /> },
+                            { path: 'saved-papers', element: <SavedPapers /> }
                         ],
                     },
                     {
