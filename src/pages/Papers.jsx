@@ -28,7 +28,11 @@ export function Papers() {
 
     const [papers, setPapers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+
     useEffect(() => {
+        // Fetch favorites once
         axiosClient.get('/favorites')
             .then(({ data }) => {
                 const favoriteProjectIds = data.favorites.map(fav => fav.project.id);
@@ -37,25 +41,34 @@ export function Papers() {
             .catch(err => console.error("Fetch favorites failed:", err));
     }, []);
 
+    // Fetch papers when searchTerm, selectedField or page changes
     useEffect(() => {
         setLoading(true);
 
         axiosClient.get('/projects/search', {
             params: {
-                q: searchTerm || undefined, // univerzalna pretraga
-                category: selectedField !== 'all' ? selectedField : undefined
+                q: searchTerm || undefined,
+                category: selectedField !== 'all' ? selectedField : undefined,
+                page: page
             }
         })
             .then(({ data }) => {
-                setPapers(data.data);
+                if (page === 1) {
+                    setPapers(data.data);
+                } else {
+                    setPapers(prev => [...prev, ...data.data]);
+                }
+                setHasMore(data.data.length > 0); // ako nema novih rezultata, nema više
             })
             .catch(err => {
                 console.error("Fetch projects failed:", err);
-                setPapers([]);
+                if (page === 1) setPapers([]);
+                setHasMore(false);
             })
             .finally(() => setLoading(false));
 
-    }, [searchTerm, selectedField]);
+    }, [searchTerm, selectedField, page]);
+
     const toggleSave = (projectId) => {
         const isSaved = savedPapers.includes(projectId);
 
@@ -73,6 +86,15 @@ export function Papers() {
                 .catch(err => console.error("Add favorite failed:", err));
         }
     };
+
+    const handleLoadMore = () => {
+        if (hasMore) setPage(prev => prev + 1);
+    };
+
+    // Reset page to 1 kad se menja search ili kategorija
+    useEffect(() => {
+        setPage(1);
+    }, [searchTerm, selectedField]);
 
     return (
         <Box>
@@ -120,7 +142,7 @@ export function Papers() {
                 </Grid>
             </Box>
 
-            {loading && (
+            {loading && page === 1 && (
                 <Box textAlign="center" py={4}>
                     <CircularProgress />
                 </Box>
@@ -153,8 +175,6 @@ export function Papers() {
                                                     <Chip label={paper.end_date} size="small" variant="outlined" sx={{ mr: 1 }} />
                                                     <Chip label={paper.budget + " $"} size="small" variant="outlined"  sx={{ mr: 1 }} />
                                                     <Chip label={paper.status} size="small" variant="outlined"  sx={{ mr: 1 }} />
-
-
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -185,6 +205,14 @@ export function Papers() {
                             <Typography variant="h6" color="text.secondary">
                                 Nema rezultata pretrage
                             </Typography>
+                        </Box>
+                    )}
+
+                    {hasMore && papers.length > 0 && (
+                        <Box textAlign="center" py={4}>
+                            <Button variant="outlined" onClick={handleLoadMore} disabled={loading}>
+                                {loading ? "Učitavanje..." : "Učitaj još"}
+                            </Button>
                         </Box>
                     )}
                 </>
