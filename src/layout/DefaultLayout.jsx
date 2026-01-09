@@ -61,12 +61,11 @@ export function DefaultLayout() {
 
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}` },
-        { id: 'papers', label: 'Naučni radovi', roles: ['admin', 'researcher', 'user'], path: `/autenticate/${user?.role}/papers` },
+        { id: 'papers', label: 'Naučni radovi', roles: [ 'researcher', 'user'], path: `/autenticate/${user?.role}/papers` },
         { id: 'saved-papers', label: 'Sačuvani radovi', roles: ['researcher', 'user'], path: `/autenticate/${user?.role}/saved-papers` },
-        { id: 'projects', label: 'Projekti', roles: ['admin', 'researcher', ], path: `/autenticate/${user?.role}/projects` },
-        { id: 'experiments', label: 'Eksperimenti', roles: ['admin', 'researcher'], path: `/autenticate/${user?.role}/experiments` },
-        { id: 'equipment', label: 'Oprema', roles: ['admin', 'researcher',], path: `/autenticate/${user?.role}/equipment` },
-        { id: 'users', label: 'Korisnici', roles: ['admin'], path: `/autenticate/${user?.role}/users` },
+        { id: 'projects', label: 'Projekti', roles: [ 'researcher', ], path: `/autenticate/${user?.role}/projects` },
+        { id: 'experiments', label: 'Eksperimenti', roles: [ 'researcher'], path: `/autenticate/${user?.role}/experiments` },
+        { id: 'equipment', label: 'Oprema', roles: [ 'researcher',], path: `/autenticate/${user?.role}/equipment` },
     ];
 
     const visibleMenuItems = menuItems.filter((item) =>

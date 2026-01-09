@@ -15,7 +15,6 @@ import {SavedPapers} from "./pages/SavedPapers.jsx";
 import {Projects} from "./pages/Projects.jsx";
 import {Equipment} from "./pages/Equipment.jsx";
 import {Experiments} from "./pages/Experiments.jsx";
-import {Users} from "./pages/Users.jsx";
 
 const router = createBrowserRouter([
     {
@@ -58,11 +57,6 @@ const router = createBrowserRouter([
                         path: 'admin',
                         children: [
                             { index: true, element: <AdminHome /> },
-                            { path: 'papers', element: <Papers /> },
-                            { path: 'projects', element: <Projects /> },
-                            { path: 'experiments', element: <Experiments /> },
-                            { path: 'equipment', element: <Equipment /> },
-                            { path: 'users', element: <Users /> },
 
                         ],
                     },
