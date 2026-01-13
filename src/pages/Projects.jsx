@@ -20,7 +20,7 @@ import {
     FormControl,
     Checkbox,
     ListItemText,
-    OutlinedInput
+    OutlinedInput, Divider, Container
 } from '@mui/material';
 import axiosClient from '../axiosClient.js';
 
@@ -65,7 +65,8 @@ export function Projects() {
     useEffect(() => {
         axiosClient.get('/users')
             .then(({ data }) => {
-                const userData = data.users || (Array.isArray(data) ? data : []);
+                const userData = data.data || (Array.isArray(data) ? data : []);
+                console.log(userData);
                 setUsers(userData);
             })
             .catch(err => {
@@ -186,92 +187,83 @@ export function Projects() {
     };
 
     return (
-        <Box sx={{ p: { xs: 2, md: 4 } }} >
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            {/* HEADER SEKCIJA - Ostavljamo konzistentno */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-                <Typography variant="h4" fontWeight="bold">Projekti</Typography>
-                <Button variant="contained" size="large" onClick={() => handleOpenDialog()}>+ Novi Projekat</Button>
+                <Box>
+                    <Typography variant="h4" fontWeight="800">Projekti</Typography>
+                    <Typography variant="body2" color="text.secondary">Pregled i upravljanje istraživanjima</Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => handleOpenDialog()}
+                    sx={{ borderRadius: 2, px: 4, textTransform: 'none', fontWeight: 'bold' }}
+                >
+                    + Novi Projekat
+                </Button>
             </Box>
 
+            {/* LISTA PROJEKATA - Kartice su sada identične širine */}
             {loading ? (
                 <Box textAlign="center" py={10}><CircularProgress /></Box>
             ) : (
-                <Grid container spacing={3} width={1400}   >
+                <Grid container spacing={3}>
                     {projects.map(project => (
-                        <Grid item xs={12}  key={project.id}>
+                        <Grid item xs={12} key={project.id}>
                             <Card sx={{
-                                width: 1400,
-                                maxWidth: 1400,
-                                mx: 'auto',
-                                minHeight: 380,
-                                display: 'flex',
-                                flexDirection: 'column',
-                                boxShadow: 3,
+                                width: '1200px',
                                 borderRadius: 3,
-                                transition: '0.3s',
-                                '&:hover': { boxShadow: 6 },
+                                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                                border: '1px solid',
+                                borderColor: 'divider',
                             }}>
-                                <CardContent  sx={{
-                                    p: 4,
-                                    flexGrow: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                }}  >
-                                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                        <Typography variant="h5" color="primary" fontWeight="bold">
-                                            {project.title}
-                                            <Typography variant="caption" sx={{ ml: 2, color: 'text.secondary' }}>
-                                                #{project.code}
+                                <CardContent sx={{ p: 4 }}>
+                                    <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                                        <Box>
+                                            <Typography variant="h5" fontWeight="bold">
+                                                {project.title}
+                                                <Typography component="span" sx={{ ml: 2, color: 'text.disabled' }}>
+                                                    #{project.code}
+                                                </Typography>
                                             </Typography>
-                                        </Typography>
+                                            <Chip label={project.category} size="small" variant="outlined" sx={{ mt: 1 }} />
+                                        </Box>
                                         <Chip
                                             label={statusOptions.find(s => s.value === project.status)?.label || project.status}
                                             color={getStatusColor(project.status)}
-                                            variant="filled"
                                             sx={{ fontWeight: 'bold' }}
                                         />
                                     </Box>
 
-                                    <Typography variant="body1" sx={{ mb: 3 }}>
+                                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
                                         {project.description || 'Nema opisa.'}
                                     </Typography>
 
-                                    <Grid container spacing={2} alignItems="center">
-                                        <Grid item xs={12} sm={4}>
-                                            <Typography variant="subtitle2" color="text.secondary">Kategorija</Typography>
-                                            <Chip label={project.category} size="small" variant="outlined" />
-                                        </Grid>
-                                        <Grid item xs={12} sm={4}>
-                                            <Typography variant="subtitle2" color="text.secondary">Budžet</Typography>
-                                            <Typography variant="body2" fontWeight="bold">
-                                                {project.budget ? `${Number(project.budget).toLocaleString()} €` : 'Nije definisan'}
+                                    <Grid container spacing={4}>
+                                        <Grid item xs={12} sm={3}>
+                                            <Typography variant="caption" color="text.disabled" fontWeight="bold">BUDŽET</Typography>
+                                            <Typography variant="h6" fontWeight="bold">
+                                                {project.budget ? `${Number(project.budget).toLocaleString()} €` : '—'}
                                             </Typography>
                                         </Grid>
+                                        <Grid item xs={12} sm={5}>
+                                            <Typography variant="caption" color="text.disabled" fontWeight="bold">VREMENSKI OKVIR</Typography>
+                                            <Typography variant="body1">📅 {project.start_date} — {project.end_date || 'Nema roka'}</Typography>
+                                        </Grid>
                                         <Grid item xs={12} sm={4}>
-                                            <Typography variant="subtitle2" color="text.secondary">Vremenski okvir</Typography>
-                                            <Typography variant="caption">📅 {project.start_date} — {project.end_date || 'Nema roka'}</Typography>
+                                            <Typography variant="caption" color="text.disabled" fontWeight="bold">REALIZACIJA {calculateProgress(project.start_date, project.end_date)}%</Typography>
+                                            <LinearProgress variant="determinate" value={calculateProgress(project.start_date, project.end_date)} sx={{ height: 8, borderRadius: 5, mt: 1 }} />
                                         </Grid>
                                     </Grid>
 
-                                    <Box  mt="auto"
-                                          display="flex"
-                                          justifyContent="space-between"
-                                          alignItems="center">
-                                        <Box display="flex" justifyContent="space-between" mb={1}>
-                                            <Typography variant="body2">Realizacija</Typography>
-                                            <Typography variant="body2" fontWeight="bold">{calculateProgress(project.start_date, project.end_date)}%</Typography>
-                                        </Box>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={calculateProgress(project.start_date, project.end_date)}
-                                            sx={{ height: 8, borderRadius: 5 }}
-                                        />
-                                    </Box>
+                                    <Divider sx={{ my: 3 }} />
 
-                                    <Box mt={3} display="flex" justifyContent="space-between" alignItems="center">
-                                        <Box display="flex" flexWrap="wrap" gap={1}>
+                                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                                        <Box display="flex" gap={1}>
                                             {project.members?.map(m => <Chip key={m.id} label={m.name} size="small" />)}
                                         </Box>
-                                        <Button variant="contained" color="inherit" onClick={() => handleOpenDialog(project)}>Uredi</Button>
+                                        <Button variant="outlined" onClick={() => handleOpenDialog(project)}>UREDI</Button>
                                     </Box>
                                 </CardContent>
                             </Card>
@@ -280,68 +272,122 @@ export function Projects() {
                 </Grid>
             )}
 
-            <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="md">
-                <DialogTitle sx={{ fontWeight: 'bold' }}>{editingProject ? 'Izmena Projekta' : 'Novi Projekat'}</DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={2}>
-                        <Grid item xs={8}>
-                            <TextField fullWidth label="Naslov" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} error={!!errors.title} helperText={errors.title?.[0]} />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <TextField fullWidth label="Šifra" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} error={!!errors.code} helperText={errors.code?.[0]} />
-                        </Grid>
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="sm"
+                scroll="paper" // Omogućava da modal ima svoj scroll bar
+                PaperProps={{ sx: { borderRadius: 3, maxHeight: '90vh' } }}
+            >
+                <DialogTitle sx={{ fontWeight: 'bold', borderBottom: '1px solid #eee', p: 3 }}>
+                    {editingProject ? 'Izmena Projekta' : 'Novi Projekat'}
+                </DialogTitle>
+
+                <DialogContent sx={{ p: 4, overflowY: 'auto' }}>
+                    <Grid container spacing={3} sx={{ mt: 0.5 }}>
+
+                        {/* NAZIV */}
                         <Grid item xs={12}>
-                            <TextField fullWidth label="Opis" multiline rows={3} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Naziv projekta</Typography>
+                            <TextField fullWidth placeholder="Unesite naziv..." value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
                         </Grid>
 
-                        {/* 4. KATEGORIJA SADA ZAUZIMA CELU ŠIRINU (xs=12) */}
+                        {/* ŠIFRA */}
                         <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Šifra projekta</Typography>
+                            <TextField fullWidth placeholder="PRJ-XXXX" value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value })} />
+                        </Grid>
+
+                        {/* OPIS */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Opis projekta</Typography>
+                            <TextField fullWidth multiline rows={3} placeholder="Kratak opis..." value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                        </Grid>
+
+                        {/* KATEGORIJA */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Kategorija</Typography>
                             <FormControl fullWidth>
-                                <InputLabel>Kategorija</InputLabel>
-                                <Select value={formData.category} label="Kategorija" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                                <Select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
                                     {categoryOptions.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={6}>
-                            <TextField fullWidth label="Budžet" type="number" value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField select fullWidth label="Status" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
+                        {/* STATUS */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Status</Typography>
+                            <TextField select fullWidth value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                                 {statusOptions.map(opt => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
                             </TextField>
                         </Grid>
-                        <Grid item xs={6}>
-                            <TextField type="date" fullWidth label="Početak" InputLabelProps={{ shrink: true }} value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} error={!!errors.start_date} helperText={errors.start_date?.[0]} />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <TextField type="date" fullWidth label="Kraj" InputLabelProps={{ shrink: true }} value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} />
-                        </Grid>
+
+                        {/* BUDŽET */}
                         <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Budžet (€)</Typography>
+                            <TextField fullWidth type="number" value={formData.budget} onChange={(e) => setFormData({ ...formData, budget: e.target.value })} />
+                        </Grid>
+
+                        {/* DATUM POČETKA */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Datum početka</Typography>
+                            <TextField type="date" fullWidth InputLabelProps={{ shrink: true }} value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} />
+                        </Grid>
+
+                        {/* DATUM KRAJA */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Datum završetka</Typography>
+                            <TextField type="date" fullWidth InputLabelProps={{ shrink: true }} value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} />
+                        </Grid>
+
+                        {/* ČLANOVI TIMA */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Članovi tima</Typography>
                             <FormControl fullWidth>
-                                <InputLabel>Članovi tima</InputLabel>
-                                <Select multiple value={formData.members} onChange={(e) => setFormData({ ...formData, members: e.target.value })} input={<OutlinedInput label="Članovi tima" />} renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((id) => <Chip key={id} label={users.find(u => u.id === id)?.name || id} size="small" />)}
-                                    </Box>
-                                )}>
-                                    {users.map((user) => (
+                                <Select
+                                    multiple
+                                    value={formData.members}
+                                    onChange={(e) => setFormData({ ...formData, members: e.target.value })}
+                                    renderValue={(selected) => (
+                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                            {selected.map(id => (
+                                                <Chip key={id} label={users.find(u => u.id === id)?.name} size="small" />
+                                            ))}
+                                        </Box>
+                                    )}
+                                >
+                                    {users.map(user => (
                                         <MenuItem key={user.id} value={user.id}>
-                                            <Checkbox checked={formData.members.indexOf(user.id) > -1} />
+                                            <Checkbox checked={formData.members.includes(user.id)} />
                                             <ListItemText primary={user.name} />
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
+
+                        {/* DOKUMENT */}
+                        <Grid item xs={12}>
+                            <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Dokumentacija</Typography>
+                            <Box sx={{ border: '1px dashed #ccc', borderRadius: 2, p: 2, textAlign: 'center', bgcolor: '#fafafa' }}>
+                                <Button variant="outlined" component="label" size="small">
+                                    ODABERI FAJL
+                                    <input type="file" hidden onChange={(e) => setFormData({ ...formData, document: e.target.files[0] })} />
+                                </Button>
+                                {formData.document && <Typography variant="caption" display="block" sx={{ mt: 1 }}>{formData.document.name}</Typography>}
+                            </Box>
+                        </Grid>
                     </Grid>
                 </DialogContent>
-                <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={handleCloseDialog}>Otkaži</Button>
-                    <Button onClick={handleSave} variant="contained" size="large">Sačuvaj Projekat</Button>
+
+                <DialogActions sx={{ p: 3, borderTop: '1px solid #eee' }}>
+                    <Button onClick={handleCloseDialog} color="inherit">Otkaži</Button>
+                    <Button onClick={handleSave} variant="contained" sx={{ px: 4, fontWeight: 'bold' }}>
+                        {editingProject ? 'Sačuvaj izmene' : 'Kreiraj projekat'}
+                    </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </Container>
     );
 }
