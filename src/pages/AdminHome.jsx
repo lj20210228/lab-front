@@ -37,19 +37,28 @@ export function AdminHome() {
     const [usersTotalPages, setUsersTotalPages] = useState(1);
 
     const fetchEquipment = async (page = 1) => {
-        const res = await axiosClient.get(`/equipment?page=${page}`);
-        setEquipment(res.data.data); // lista opreme
-        setEquipmentPage(res.data.current_page);
-        setEquipmentTotalPages(res.data.last_page);
+        try {
+            const res = await axiosClient.get(`/equipment?page=${page}`);
+            setEquipment(res.data.data || []);
+            setEquipmentPage(res.data.current_page || 1);
+            setEquipmentTotalPages(res.data.last_page || 1);
+        } catch (error) {
+            console.error("Greška pri učitavanju opreme:", error);
+            setEquipment([]); // Reset to empty array on error
+        }
     };
 
     const fetchUsers = async (page = 1) => {
-        const res = await axiosClient.get(`/users?page=${page}`);
-        setUsers(res.data.data); // lista korisnika
-        setUsersPage(res.data.current_page);
-        setUsersTotalPages(res.data.last_page);
+        try {
+            const res = await axiosClient.get(`/users?page=${page}`);
+            setUsers(res.data.data || []);
+            setUsersPage(res.data.current_page || 1);
+            setUsersTotalPages(res.data.last_page || 1);
+        } catch (err) {
+            console.error("Greška pri učitavanju korisnika:", err);
+            setUsers([]);
+        }
     };
-
 
     useEffect(() => {
         fetchEquipment();

@@ -47,7 +47,7 @@ export function Papers() {
 
         axiosClient.get('/projects/search', {
             params: {
-                q: searchTerm || undefined,
+                title: searchTerm || undefined,
                 category: selectedField !== 'all' ? selectedField : undefined,
                 page: page
             }
@@ -58,7 +58,7 @@ export function Papers() {
                 } else {
                     setPapers(prev => [...prev, ...data.data]);
                 }
-                setHasMore(data.data.length > 0); // ako nema novih rezultata, nema više
+                setHasMore(data.data.length > 0);
             })
             .catch(err => {
                 console.error("Fetch projects failed:", err);

@@ -65,7 +65,7 @@ export function Projects() {
     useEffect(() => {
         axiosClient.get('/users')
             .then(({ data }) => {
-                const userData = data.data || (Array.isArray(data) ? data : []);
+                const userData = data.users || (Array.isArray(data) ? data : []);
                 console.log(userData);
                 setUsers(userData);
             })

@@ -25,10 +25,10 @@ export function Equipment() {
 
     const [form, setForm] = useState({
         equipment_id: '',
-        start_date: '',
-        end_date: '',
-        purpose:"",
-        project_id:""
+        project_id: '',
+        start_time: '',
+        end_time: '',
+        purpose: '',
     });
     const [projects, setProjects] = useState([]);
 
@@ -65,29 +65,42 @@ export function Equipment() {
         isReserved(equipmentId) ? 'Rezervisano' : 'Dostupno';
 
     const handleAddReservation = async () => {
-        if (!form.project_id) {
-            alert("Morate izabrati projekat!");
+        if (!form.project_id || !form.equipment_id) {
+            alert("Morate izabrati projekat i opremu!");
             return;
         }
 
-        await axiosClient.post('/reservations', {
-            equipment_id: form.equipment_id,
-            project_id: form.project_id,
-            start_time: form.start_time,
-            end_time: form.end_time,
-            purpose: form.purpose,
-        });
+        if (!form.purpose.trim()) {
+            alert("Svrha rezervacije je obavezna!");
+            return;
+        }
 
-        setOpen(false);
-        setForm({
-            equipment_id: '',
-            project_id: '',
-            start_time: '',
-            end_time: '',
-            purpose: '',
-        });
+        try {
+            await axiosClient.post('/reservations/add', {
+                equipment_id: Number(form.equipment_id),
+                project_id: Number(form.project_id),
+                start_time: form.start_time,
+                end_time: form.end_time,
+                purpose: form.purpose,
+            });
 
-        fetchReservations();
+            setOpen(false);
+            setForm({
+                equipment_id: '',
+                project_id: '',
+                start_time: '',
+                end_time: '',
+                purpose: '',
+            });
+
+            fetchReservations();
+        } catch (err) {
+            console.error("Greška pri rezervaciji:", err);
+            const status = err.response?.status;
+            alert(status === 400
+                ? "Proveri popunjena polja"
+                : "Greška na serveru");
+        }
     };
 
 
@@ -187,7 +200,7 @@ export function Equipment() {
                         }
                     >
                         {projects.map((project) => (
-                            <MenuItem key={project.id} value={project.id}>
+                            <MenuItem key={String(project.id)} value={project.id}>
                                 {project.title}
                             </MenuItem>
                         ))}

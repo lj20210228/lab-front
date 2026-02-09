@@ -22,6 +22,7 @@ export function Experiments() {
     const [projects, setProjects] = useState([]);
     const [open, setOpen] = useState(false);
 
+    // Inicijalni state forme
     const [form, setForm] = useState({
         name: '',
         protocol: '',
@@ -31,46 +32,48 @@ export function Experiments() {
     });
 
 
-    const fetchExperiments = async () => {
-        const res = await axiosClient.get('/experiments');
-        setExperiments(res.data.data);
+    const fetchAllExperiments = async () => {
+        try {
+            const res = await axiosClient.get('/experiments');
+
+            setExperiments(res.data.data);
+        } catch (err) {
+            console.error(err);
+            setExperiments([]);
+        }
     };
 
-    const fetchProjects = async () => {
-        const res = await axiosClient.get('/projects');
-        setProjects(res.data.data);
+
+
+    // 2. Slanje novog eksperimenta
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            // Provera da li je projekat izabran
+            if (!form.project_id) {
+                alert("Molimo izaberite projekat");
+                return;
+            }
+
+            await axiosClient.post('/projects/experiments', form); // Koristimo 'form', ne 'formData'
+
+            setOpen(false);
+            setForm({ name: '', protocol: '', date_performed: '', status: 'completed', project_id: '' });
+
+            const res = await axiosClient.get(`/projects/${form.project_id}/experiments`);
+            setExperiments(res.data?.data || res.data || []);
+
+        } catch (err) {
+            console.error("Greška pri slanju:", err);
+            const status = err.response?.status;
+            alert(status === 500 ? "Greška na serveru (Mass Assignment ili Baza)" : "Došlo je do greške");
+        }
     };
 
     useEffect(() => {
-        fetchExperiments();
-        fetchProjects();
+        fetchAllExperiments();
     }, []);
 
-
-
-    const handleSubmit = async () => {
-        await axiosClient.post(
-            `/projects/experiments`,
-            {
-                project_id:form.project_id,
-                name: form.name,
-                protocol: form.protocol,
-                date_performed: form.date_performed,
-                status: form.status,
-            }
-        );
-
-        setOpen(false);
-        setForm({
-            name: '',
-            protocol: '',
-            date_performed: '',
-            status: 'completed',
-            project_id: '',
-        });
-
-        fetchExperiments();
-    };
 
     return (
         <Box>
